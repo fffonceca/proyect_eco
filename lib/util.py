@@ -20,7 +20,7 @@ def dif_err(obs: np.array, theta_r: np.array, e_v1: np.array, e_v2: np.array):
     """
     theta = theta_real(obs)
     err_theta = theta_r - theta
-    print(f"Theta1: {theta[0]*180/np.pi}, Theta ref: {theta_r[0]*180/np.pi}")
+    # print(f"Theta1: {theta[0]*180/np.pi}, Theta ref: {theta_r[0]*180/np.pi}")
     e_v1 = np.hstack((err_theta[0], e_v1[0:2]))
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))
 
@@ -51,7 +51,7 @@ def posicion(ang):
     if np.pi <= ang < 3*np.pi/2:
         x = -np.cos(ang)
         y = -np.sin(ang)
-    if 3*np.pi/2 <= ang < 2*np.pi:
+    else:
         x = -np.cos(ang)
         y = np.sin(ang)
 

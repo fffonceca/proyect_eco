@@ -23,10 +23,10 @@ def main():
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
-    observation, _ = env.reset(seed=0, return_info=True)
+    observation, _ = env.reset(seed=None, return_info=True)
 
-    # theta_ref = control_de_referencia(observation)
-    theta_ref = np.array([np.pi/2, np.pi/4])
+    theta_ref = control_de_referencia(observation)
+    # theta_ref = np.array([np.pi/2, np.pi/4])
 
     err_v1, err_v2 = dif_err(observation, theta_ref, err_v1, err_v2)
 
@@ -35,16 +35,13 @@ def main():
     for _ in range(test_steps):
         # Itera la interfaz
         env.render()
-        # ?
         accion = env.action_space.sample()
         # Aplica torque
         observation, reward, _, _ = env.step(torques)
         # Calculamos diferencia y lo guardamos en el vector buffer
         err_v1, err_v2 = dif_err(observation, theta_ref, err_v1, err_v2)
-        # print(err_v1)
         # Aplicamos ley de control PID
         torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
-        # print(f"torques: {torques}")
 
     glfw.terminate()
     env.close()
