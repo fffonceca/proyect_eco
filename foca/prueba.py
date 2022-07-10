@@ -1,6 +1,11 @@
 import numpy as np
-import gym  # OpenAI gym
+import gym
 import glfw
+import os
+import time
+
+
+XML_PATH_PENDULO = os.path.join('lib', 'doble_pendulo.xml')
 
 
 def pid_calc(pid_wights1: np.array, e_k_v_1: np.array,
@@ -41,7 +46,8 @@ def main():
     pid_k1 = np.array([1.0, 0.2, 0.3])
     pid_k2 = np.array([1.0, 0.2, 0.3])
     # prev
-    torques = np.array([0.0, 0.0])
+
+    torques = np.array([0.001, 0.00])
     # Errors
     err_v1 = np.array([0.0, 0.0, 0.0])
     err_v2 = np.array([0.0, 0.0, 0.0])
@@ -49,11 +55,12 @@ def main():
     # Para visualizar que es lo que hace el agente
     glfw.init()
 
-    test_steps = 1000
+    test_steps = 100000
 
     env = gym.make("Reacher-v2")  # brazo 2 DOF
     observation, info = env.reset(seed=0, return_info=True)
     print(observation)
+    print(info)
 
     for _ in range(test_steps):
         env.render()
@@ -61,10 +68,9 @@ def main():
 
         observation, reward, done, aux_dict = env.step(torques)
 
-        # PID calc
-        torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques, Ts)
+        aux = np.sqrt(observation[8]**2 + observation[9]**2)
+        print(f"Distancia a target {aux}, pos target: {observation[4:6]}")
 
-        print(observation[0], observation[1])
 
     glfw.terminate()
     env.close()
