@@ -8,14 +8,14 @@ import gym
 def main():
     # PARAMS
     Ts = 0.01
-    test_steps = 100000
+    test_steps = 10000
     # PID
     pid_k1 = np.array([0.1, 0., 0.1])
     pid_k2 = np.array([0.1, 0., 0.1])
     err_v1 = np.array([0.0, 0.0, 0.0])
     err_v2 = np.array([0.0, 0.0, 0.0])
     # torques inicial
-    torques = np.array([0.0, 0.0])
+    torques = np.array([0.0000, 0.000])
 
     # Genera vector de tiempo
     t = gen_tiempo(Ts, test_steps)
@@ -26,11 +26,6 @@ def main():
     observation, _ = env.reset(seed=None, return_info=True)
 
     theta_ref = control_de_referencia(observation)
-    # theta_ref = np.array([np.pi/2, np.pi/4])
-
-    err_v1, err_v2 = dif_err(observation, theta_ref, err_v1, err_v2)
-
-    torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
 
     for _ in range(test_steps):
         # Itera la interfaz

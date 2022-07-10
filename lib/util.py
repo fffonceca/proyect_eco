@@ -18,9 +18,18 @@ def dif_err(obs: np.array, theta_r: np.array, e_v1: np.array, e_v2: np.array):
     valor actual del angulo. Lo guarda en los vectores
     y los retorna.
     """
+    # Depackaging theta's
     theta = theta_real(obs)
-    err_theta = theta_r - theta
-    # print(f"Theta1: {theta[0]*180/np.pi}, Theta ref: {theta_r[0]*180/np.pi}")
+    theta1, theta2 = theta
+    theta_ref1, theta_ref2 = theta_r
+
+    # Calculates smallest signed angle
+    # err_theta = theta_r - theta
+    err_theta = np.array([
+        smallest_angle(theta1, theta_ref1),
+        smallest_angle(theta2, theta_ref2)
+    ])
+
     e_v1 = np.hstack((err_theta[0], e_v1[0:2]))
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))
 
@@ -77,12 +86,13 @@ def theta_ref12(obs: np.array, L1=0.1, L2=0.1):
     if np.sqrt(x**2 + y**2) < L1 - L2:
         return 0, 0, False
 
-    beta = np.arccos((L1**2+L2**2-(x**2+y**2))/(2*L1*L2))
+    beta = np.arccos((L1**2+L2**2-x**2-y**2)/(2*L1*L2))
     alpha = np.arccos((x**2+y**2+L1**2-L2**2)/(2*L1*np.sqrt(x**2+y**2)))
     gamma = np.arctan2(y, x)
 
     sol1 = np.array([gamma - alpha, np.pi - beta])
-    sol2 = np.array([gamma + alpha, np.pi + beta])
+    sol2 = np.array([gamma + alpha, beta - np.pi])
+    print(f"Sol1 {sol1*180/np.pi}, Sol2 {sol2*180/np.pi}")
     return sol1, sol2, True
 
 
@@ -154,5 +164,16 @@ def output_info(observation: np.array, torques) -> tuple:
     return (err_eucl, err_x_y, tor_norm)
 
 
+def smallest_angle(theta_state, theta_ref):
+    a = (theta_state - theta_ref) % (2.*np.pi)
+    b = (theta_ref - theta_state) % (2.*np.pi)
+    if a < b:
+        return -a
+    return b
+
+
 if __name__ == '__main__':
-    pass
+    ref = 180
+    estado = -175
+    a = smallest_angle(estado*np.pi/180, ref*np.pi/180)
+    print(a*180/np.pi)
