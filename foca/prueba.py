@@ -5,9 +5,6 @@ import os
 import time
 
 
-XML_PATH_PENDULO = os.path.join('lib', 'doble_pendulo.xml')
-
-
 def pid_calc(pid_wights1: np.array, e_k_v_1: np.array,
              pid_wights2: np.array, e_k_v_2: np.array,
              torques: np.array, Ts=0.01) -> tuple:
@@ -46,7 +43,6 @@ def main():
     pid_k1 = np.array([1.0, 0.2, 0.3])
     pid_k2 = np.array([1.0, 0.2, 0.3])
     # prev
-
     torques = np.array([0.001, 0.00])
     # Errors
     err_v1 = np.array([0.0, 0.0, 0.0])
@@ -54,13 +50,10 @@ def main():
 
     # Para visualizar que es lo que hace el agente
     glfw.init()
-
     test_steps = 100000
 
     env = gym.make("Reacher-v2")  # brazo 2 DOF
     observation, info = env.reset(seed=0, return_info=True)
-    print(observation)
-    print(info)
 
     for _ in range(test_steps):
         env.render()
@@ -69,8 +62,8 @@ def main():
         observation, reward, done, aux_dict = env.step(torques)
 
         aux = np.sqrt(observation[8]**2 + observation[9]**2)
-        print(f"Distancia a target {aux}, pos target: {observation[4:6]}")
-
+        # print(f"Distancia a target {aux}, pos target: {observation[4:6]}")
+        print(accion)
 
     glfw.terminate()
     env.close()
