@@ -12,15 +12,15 @@ def control_de_referencia(obs: np.array) -> np.array:
     return ref_control(sol1, sol2, obs[0])
 
 
-def dif_err(obs: np.array, theta_r: np.array, e_v1: np.array, e_v2: np.array):
+def dif_err_pid(obs: np.array, theta_r: np.array, e_v1: np.array,
+                e_v2: np.array) -> np.array:
     """
     Calcula la diferencia entre la referencia y el
     valor actual del angulo. Lo guarda en los vectores
-    y los retorna.
+    y los retorna. Para PID
     """
     # Depackaging theta's
-    theta = theta_real(obs)
-    theta1, theta2 = theta
+    theta1, theta2 = theta_real(obs)
     theta_ref1, theta_ref2 = theta_r
 
     # Calculates smallest signed angle
@@ -34,6 +34,21 @@ def dif_err(obs: np.array, theta_r: np.array, e_v1: np.array, e_v2: np.array):
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))
 
     return e_v1, e_v2
+
+
+def dif_err_lqi(obs: np.array, theta_r: np.array) -> np.array:
+    # Depackaging theta's
+    theta1, theta2 = theta_real(obs)
+    theta_ref1, theta_ref2 = theta_r
+
+    # Calculates smallest signed angle
+    # err_theta = theta_r - theta
+    err_theta = np.array([
+        smallest_angle(theta1, theta_ref1),
+        smallest_angle(theta2, theta_ref2)
+    ])
+
+    return np.hstack((err_theta, -obs[6], -obs[7]))
 
 
 def gen_tiempo(Ts: float, steps: int) -> np.array:
@@ -80,10 +95,12 @@ def theta_ref12(obs: np.array, L1=0.1, L2=0.1):
     x, y = target_pos(obs)
     # El brazo no es tan largo
     if np.sqrt(x**2 + y**2) > L1 + L2:
+        print("No se puede, max")
         return 0, 0, False
 
     # Menor a lo que puede el brazo
     if np.sqrt(x**2 + y**2) < L1 - L2:
+        print("No se puede, min")
         return 0, 0, False
 
     beta = np.arccos((L1**2+L2**2-x**2-y**2)/(2*L1*L2))
@@ -92,7 +109,7 @@ def theta_ref12(obs: np.array, L1=0.1, L2=0.1):
 
     sol1 = np.array([gamma - alpha, np.pi - beta])
     sol2 = np.array([gamma + alpha, beta - np.pi])
-    print(f"Sol1 {sol1*180/np.pi}, Sol2 {sol2*180/np.pi}")
+    # print(f"Sol1 {sol1*180/np.pi}, Sol2 {sol2*180/np.pi}")
     return sol1, sol2, True
 
 
