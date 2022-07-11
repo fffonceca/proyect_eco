@@ -1,5 +1,5 @@
 from lib.util import control_de_referencia, gen_tiempo, dif_err_pid, theta_real
-from lib.pid import pid_calc
+from lib.osc import control_osc
 import lib.graficos as graphs
 import lib.indices as ind
 import numpy as np
@@ -20,18 +20,14 @@ def main():
     test_steps = 5000
     if INDICES and PLOTING:  # TODO
         test_steps = 1000
-    # PID
-    pid_k1 = np.array([0.1, .1, 0.1])
-    pid_k2 = np.array([0.1, .1, 0.1])
-    err_v1 = np.array([0.0, .0, 0.0])
-    err_v2 = np.array([0.0, .0, 0.0])
     # torques inicial
-    torques = np.array([0.0000, 0.000])
+    torques = np.array([0.0, 0.0])
     # Genera vector de tiempo
     t = gen_tiempo(Ts, test_steps)
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
+    observation, _ = env.reset(seed=None, return_info=True)
 
     # Vectores para grafico TODO
     e_torques_t = np.zeros((len(t), 2))
@@ -48,7 +44,6 @@ def main():
         observation, _ = env.reset(seed=None, return_info=True)
         theta_ref = control_de_referencia(observation)
 
-    # Iter
     for k in range(test_steps):
         # Cambiar seed
         if k % (test_steps/20) == 0 and not INDICES:  # TODO
@@ -57,18 +52,17 @@ def main():
         # Itera la interfaz
         env.render()
         accion = env.action_space.sample()
-        # Aplica torque, retorna obs
+        # Aplica torque
         observation, reward, _, _ = env.step(torques)
-        # Calculamos diferencia y lo guardamos en el vector buffer
-        err_v1, err_v2, err_theta = dif_err_pid(
-            observation, theta_ref, err_v1, err_v2)
         # Aplicamos ley de control PID
-        torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
+        torques = control_osc(observation, kp=5, kv=5)
         # Si hay ruido TODO, agregamos a la medicion
         if NOISE:
             torques += 0.001*np.random.normal(size=2)
+
         # TODO
         if PLOTING:
+            err_theta = dif_err_pid(observation, theta_ref, None, None)
             # GRAFICOS
             e_torques_t[k, :] = torques
             e_x_t[k, :] = err_theta

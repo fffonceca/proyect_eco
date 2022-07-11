@@ -29,11 +29,13 @@ def dif_err_pid(obs: np.array, theta_r: np.array, e_v1: np.array,
         smallest_angle(theta1, theta_ref1),
         smallest_angle(theta2, theta_ref2)
     ])
+    if e_v1 is None:
+        return err_theta
 
     e_v1 = np.hstack((err_theta[0], e_v1[0:2]))
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))
 
-    return e_v1, e_v2
+    return e_v1, e_v2, err_theta
 
 
 def dif_err_lqi(obs: np.array, theta_r: np.array) -> np.array:
@@ -42,7 +44,6 @@ def dif_err_lqi(obs: np.array, theta_r: np.array) -> np.array:
     theta_ref1, theta_ref2 = theta_r
 
     # Calculates smallest signed angle
-    # err_theta = theta_r - theta
     err_theta = np.array([
         smallest_angle(theta1, theta_ref1),
         smallest_angle(theta2, theta_ref2)
@@ -55,7 +56,7 @@ def gen_tiempo(Ts: float, steps: int) -> np.array:
     """
     Genera el vector de tiempo
     """
-    return np.linspace(0, round(Ts*steps-1), round(Ts*steps))
+    return np.linspace(0, round(Ts*steps-1), steps)
 
 
 def distancia(pos1, pos2):
@@ -80,6 +81,26 @@ def posicion(ang):
         y = np.sin(ang)
 
     return np.array([x, y])
+
+
+def vel_real(obs: np.array, L1=0.1, L2=0.1) -> np.array:
+    """
+    Calcula las velocidades vx vy
+    del footprint
+
+    obs0: Cos[q1[t]]
+    obs1: Cos[q2[t]]
+    obs2: Sin[q1[t]]
+    obs3: Sin[q2[t]]
+    obs6: q1'[t]
+    obs7: q2'[t]
+    """
+    theta1, theta2 = theta_real(obs)
+
+    vx = -L1*obs[2]*obs[6]-1/2*L2*np.sin(theta1+theta2)*(obs[6]+obs[7])
+    vy = L1*obs[0]*obs[6]+1/2*L2*np.cos(theta1+theta2)*(obs[6]+obs[7])
+
+    return np.array([vx, vy])
 
 
 def theta_ref12(obs: np.array, L1=0.1, L2=0.1):

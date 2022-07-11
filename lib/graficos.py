@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def grafico_estados(t: np.array, eX_vector: np.array, eY_vector: np.array):
+def grafico_convergencia(t: np.array, e_vector: np.array):
+    eX_vector = e_vector[:, 0]
+    eY_vector = e_vector[:, 1]
     plt.plot(t, eX_vector, label="error x")
     plt.plot(t, eY_vector, label="error y")
     plt.xlabel("Tiempo (segs)")
@@ -12,13 +14,46 @@ def grafico_estados(t: np.array, eX_vector: np.array, eY_vector: np.array):
     plt.show()
 
 
-def grafico_peso(t: np.array, reward_vector: np.array, torques_vector: np.array):
-    plt.plot(t, reward_vector, label="recompensa")
-    plt.plot(t, torques_vector, label="energía")
+def grafico_indices(t: np.array, ise_v: np.array, itse_v: np.array,
+                    iae_v: np.array, itae_v: np.array):
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Evolución de métricas')
+    axs[0].plot(t, ise_v, label="ISE")
+    axs[0].plot(t, iae_v, label="IAE")
+    axs[1].plot(t, itse_v, label="ITSE")
+    axs[1].plot(t, itae_v, label="ITAE")
+    axs[1].set(xlabel='Tiempo (segs)')
+    for ax in axs:
+        ax.set(ylabel="Magnitud")
+        ax.legend()
+    plt.show()
+
+
+def grafico_torques(t: np.array, torques_vector: np.array):
+    plt.plot(t, torques_vector[:, 0], label="tau 1")
+    plt.plot(t, torques_vector[:, 1], label="tau 2")
     plt.xlabel("Tiempo (segs)")
-    plt.ylabel("Función de costos (mts)")
-    plt.title("Dinámica de costo")
+    plt.ylabel("Torques (N*m)")
+    plt.title("Torques en el tiempo")
     plt.legend()
+    plt.show()
+
+
+def grafico_estados(t: np.array, x_vector: np.array, x_ref: np.array):
+    x_v = x_vector[:, 0]
+    y_v = x_vector[:, 1]
+    x_ref_v = x_ref[:, 0]
+    y_ref_v = x_ref[:, 1]
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Tendencia a la referencia')
+    axs[0].plot(t, x_v, label="Posicion x")
+    axs[0].plot(t, x_ref_v, label="Referencia")
+    axs[1].plot(t, y_v, label="Posicion y")
+    axs[1].plot(t, y_ref_v, label="Referencia")
+    axs[1].set(xlabel='Tiempo (segs)')
+    for ax in axs:
+        ax.set(ylabel='Distancia (mts)')
+        ax.legend()
     plt.show()
 
 
