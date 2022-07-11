@@ -1,5 +1,6 @@
 from scipy.linalg import expm
 import numpy as np
+MASA = .1*0.01**2*np.pi*1000
 
 
 def matrices_completas(obs: np.array, torques: np.array):
@@ -17,8 +18,7 @@ def matrices_completas(obs: np.array, torques: np.array):
     return Aa, Ba, Ca
 
 
-def jacobianos(observation: np.array, tau: np.array,
-               m=0.1*0.01**2*np.pi*1000, L1=0.1, L2=0.1):
+def jacobianos(observation: np.array, tau: np.array, m=MASA, L1=0.1, L2=0.1):
     """
     Entrega las matrices en el espacio continuo
 
@@ -30,7 +30,7 @@ def jacobianos(observation: np.array, tau: np.array,
     obs7: omega_2
     """
     # Depackaging obs
-    obs0, obs1, obs2, obs3, _, _, obs6, obs7, _, _, _ = observation
+    _, obs1, _, obs3, _, _, obs6, obs7, _, _, _ = observation
 
     comun_den = (L1*(16*L1**2 + 12*L1*L2*obs1 + 3*L2**2*(17-12*obs1**2)))
     A33_num = 12*L2*obs3*(6*L1*L2*obs1*obs6+L1**2*obs7+3*L1**2*(obs6+obs7))

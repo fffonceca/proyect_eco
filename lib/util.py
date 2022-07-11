@@ -42,7 +42,6 @@ def dif_err_lqi(obs: np.array, theta_r: np.array) -> np.array:
     theta_ref1, theta_ref2 = theta_r
 
     # Calculates smallest signed angle
-    # err_theta = theta_r - theta
     err_theta = np.array([
         smallest_angle(theta1, theta_ref1),
         smallest_angle(theta2, theta_ref2)
@@ -80,6 +79,26 @@ def posicion(ang):
         y = np.sin(ang)
 
     return np.array([x, y])
+
+
+def vel_real(obs: np.array, L1=0.1, L2=0.1) -> np.array:
+    """
+    Calcula las velocidades vx vy
+    del footprint
+
+    obs0: Cos[q1[t]]
+    obs1: Cos[q2[t]]
+    obs2: Sin[q1[t]]
+    obs3: Sin[q2[t]]
+    obs6: q1'[t]
+    obs7: q2'[t]
+    """
+    theta1, theta2 = theta_real(obs)
+
+    vx = -L1*obs[2]*obs[6]-1/2*L2*np.sin(theta1+theta2)*(obs[6]+obs[7])
+    vy = L1*obs[0]*obs[6]+1/2*L2*np.cos(theta1+theta2)*(obs[6]+obs[7])
+
+    return np.array([vx, vy])
 
 
 def theta_ref12(obs: np.array, L1=0.1, L2=0.1):
