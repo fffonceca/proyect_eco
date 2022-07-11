@@ -16,14 +16,16 @@ def grafico_convergencia(t: np.array, e_vector: np.array):
 
 def grafico_indices(t: np.array, ise_v: np.array, itse_v: np.array,
                     iae_v: np.array, itae_v: np.array):
-    plt.plot(t, ise_v, label="ise")
-    plt.plot(t, itse_v, label="itse")
-    plt.plot(t, iae_v, label="iae")
-    plt.plot(t, itae_v, label="itae")
-    plt.xlabel("Tiempo (segs)")
-    plt.ylabel("Magnitud")
-    plt.title("Evolución de métricas")
-    plt.legend()
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Evolución de métricas')
+    axs[0].plot(t, ise_v, label="ISE")
+    axs[0].plot(t, iae_v, label="IAE")
+    axs[1].plot(t, itse_v, label="ITSE")
+    axs[1].plot(t, itae_v, label="ITAE")
+    axs[1].set(xlabel='Tiempo (segs)')
+    for ax in axs:
+        ax.set(ylabel="Magnitud")
+        ax.legend()
     plt.show()
 
 
@@ -48,8 +50,9 @@ def grafico_estados(t: np.array, x_vector: np.array, x_ref: np.array):
     axs[0].plot(t, x_ref_v, label="Referencia")
     axs[1].plot(t, y_v, label="Posicion y")
     axs[1].plot(t, y_ref_v, label="Referencia")
+    axs[1].set(xlabel='Tiempo (segs)')
     for ax in axs:
-        ax.set(xlabel='Tiempo (segs)', ylabel='Distancia (mts)')
+        ax.set(ylabel='Distancia (mts)')
         ax.legend()
     plt.show()
 

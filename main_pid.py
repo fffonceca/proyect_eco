@@ -7,9 +7,9 @@ import glfw
 import gym
 
 # Quieres graficos? TODO
-PLOTING = False
+PLOTING = True
 # Quieres indices?
-INDICES = False
+INDICES = True
 
 
 def main():
