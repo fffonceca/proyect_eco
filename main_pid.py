@@ -10,17 +10,19 @@ import gym
 PLOTING = True
 # Quieres indices?
 INDICES = True
+# Quieres ruido?
+NOISE = True
 
 
 def main():
     # PARAMS
     Ts = 0.01
     test_steps = 5000
-    if INDICES and PLOTING:
+    if INDICES and PLOTING:  # TODO
         test_steps = 1000
     # PID
-    pid_k1 = np.array([0.1, .0, 0.1])
-    pid_k2 = np.array([0.1, .0, 0.1])
+    pid_k1 = np.array([0.1, .1, 0.1])
+    pid_k2 = np.array([0.1, .1, 0.1])
     err_v1 = np.array([0.0, .0, 0.0])
     err_v2 = np.array([0.0, .0, 0.0])
     # torques inicial
@@ -42,26 +44,30 @@ def main():
     iae_t = np.zeros((len(t), 1))
     itae_t = np.zeros((len(t), 1))
 
-    if INDICES and PLOTING:
+    if INDICES and PLOTING:  # TODO
         observation, _ = env.reset(seed=None, return_info=True)
         theta_ref = control_de_referencia(observation)
 
     # Iter
     for k in range(test_steps):
         # Cambiar seed
-        if k % (test_steps/20) == 0 and not INDICES:
+        if k % (test_steps/20) == 0 and not INDICES:  # TODO
             observation, _ = env.reset(seed=None, return_info=True)
             theta_ref = control_de_referencia(observation)
         # Itera la interfaz
         env.render()
         accion = env.action_space.sample()
-        # Aplica torque
+        # Aplica torque, retorna obs
         observation, reward, _, _ = env.step(torques)
         # Calculamos diferencia y lo guardamos en el vector buffer
         err_v1, err_v2, err_theta = dif_err_pid(
             observation, theta_ref, err_v1, err_v2)
         # Aplicamos ley de control PID
         torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
+        # Si hay ruido TODO, agregamos a la medicion
+        if NOISE:
+            torques += 0.001*np.random.normal(size=2)
+        # TODO
         if PLOTING:
             # GRAFICOS
             e_torques_t[k, :] = torques
@@ -77,8 +83,9 @@ def main():
     glfw.terminate()
     env.close()
 
+    # TODO
     if PLOTING:
-        # Generar graficos TODO
+        # Generar graficos
         graphs.grafico_convergencia(t, e_x_t)
         graphs.grafico_torques(t, e_torques_t)
         graphs.grafico_estados(t, theta_real_t, theta_ref_t)

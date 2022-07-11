@@ -29,6 +29,8 @@ def dif_err_pid(obs: np.array, theta_r: np.array, e_v1: np.array,
         smallest_angle(theta1, theta_ref1),
         smallest_angle(theta2, theta_ref2)
     ])
+    if e_v1 is None:
+        return err_theta
 
     e_v1 = np.hstack((err_theta[0], e_v1[0:2]))
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))

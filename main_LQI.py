@@ -11,6 +11,8 @@ import gym
 PLOTING = True
 # Quieres indices?
 INDICES = True
+# Quieres ruido?
+NOISE = True
 
 
 def main():
@@ -67,6 +69,9 @@ def main():
         )
         # Calculo de actuadores
         torques = K.dot(x_a)
+        # Si hay ruido TODO, agregamos a la medicion
+        if NOISE:
+            torques += 0.001*np.random.normal(size=2)
 
         # Itera la interfaz
         env.render()
