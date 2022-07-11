@@ -5,6 +5,11 @@ import numpy as np
 import glfw
 import gym
 
+# Quieres graficos?
+PLOTING = False
+# Quieres indices?
+INDICES = False
+
 
 def main():
     # PARAMS
@@ -20,9 +25,20 @@ def main():
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
-    observation, _ = env.reset(seed=None, return_info=True)
-    # Valores de y para referenciar
-    theta_ref = control_de_referencia(observation)
+    if INDICES and PLOTING:
+        observation, _ = env.reset(seed=None, return_info=True)
+        theta_ref = control_de_referencia(observation)
+
+    # Vectores para grafico
+    e_torques_t = np.zeros((len(t), 2))
+    e_x_t = np.zeros((len(t), 2))
+    theta_ref_t = np.zeros((len(t), 2))
+    theta_real_t = np.zeros((len(t), 2))
+    # Vectores de indice
+    ise_t = np.zeros((len(t), 1))
+    itse_t = np.zeros((len(t), 1))
+    iae_t = np.zeros((len(t), 1))
+    itae_t = np.zeros((len(t), 1))
 
     for k in range(test_steps):
         # Cambiar seed

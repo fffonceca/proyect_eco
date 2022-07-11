@@ -33,7 +33,7 @@ def dif_err_pid(obs: np.array, theta_r: np.array, e_v1: np.array,
     e_v1 = np.hstack((err_theta[0], e_v1[0:2]))
     e_v2 = np.hstack((err_theta[1], e_v2[0:2]))
 
-    return e_v1, e_v2
+    return e_v1, e_v2, err_theta
 
 
 def dif_err_lqi(obs: np.array, theta_r: np.array) -> np.array:
@@ -54,7 +54,7 @@ def gen_tiempo(Ts: float, steps: int) -> np.array:
     """
     Genera el vector de tiempo
     """
-    return np.linspace(0, round(Ts*steps-1), round(Ts*steps))
+    return np.linspace(0, round(Ts*steps-1), steps)
 
 
 def distancia(pos1, pos2):
