@@ -30,7 +30,7 @@ def main():
         observation, reward, _, _ = env.step(torques)
 
         """
-            Operacion LQI
+        Operacion LQI
         """
         # Obtenemos jacobianos para la iteracion
 
