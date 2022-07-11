@@ -11,7 +11,9 @@ PLOTING = True
 # Quieres indices?
 INDICES = True
 # Quieres ruido?
-NOISE = True
+NOISE = False
+# Exportar?
+EXPORT = True
 
 
 def main():
@@ -27,7 +29,6 @@ def main():
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
-    observation, _ = env.reset(seed=None, return_info=True)
 
     # Vectores para grafico TODO
     e_torques_t = np.zeros((len(t), 2))
@@ -41,7 +42,7 @@ def main():
     itae_t = np.zeros((len(t), 1))
 
     if INDICES and PLOTING:  # TODO
-        observation, _ = env.reset(seed=None, return_info=True)
+        observation, _ = env.reset(seed=0, return_info=True)
         theta_ref = control_de_referencia(observation)
 
     for k in range(test_steps):
@@ -85,6 +86,10 @@ def main():
         graphs.grafico_estados(t, theta_real_t, theta_ref_t)
         if INDICES:
             graphs.grafico_indices(t, ise_t, itse_t, iae_t, itae_t)
+
+    if EXPORT:
+        np.save(graphs.OSC_PATH_EXPORT+"_state.npy",
+                np.hstack((theta_real_t, theta_ref_t)))
 
 
 if __name__ == '__main__':

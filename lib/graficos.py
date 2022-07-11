@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+PID_PATH_EXPORT = "export/pid"
+LIQ_PATH_EXPORT = "export/liq"
+OSC_PATH_EXPORT = "export/osc"
 
 
 def grafico_convergencia(t: np.array, e_vector: np.array):
@@ -49,6 +52,35 @@ def grafico_estados(t: np.array, x_vector: np.array, x_ref: np.array):
     axs[0].plot(t, x_v, label="Posicion x")
     axs[0].plot(t, x_ref_v, label="Referencia")
     axs[1].plot(t, y_v, label="Posicion y")
+    axs[1].plot(t, y_ref_v, label="Referencia")
+    axs[1].set(xlabel='Tiempo (segs)')
+    for ax in axs:
+        ax.set(ylabel='Distancia (mts)')
+        ax.legend()
+    plt.show()
+
+
+def graficos_estados_todos(t, x_ref: np.array, x_v_pid_: np.array,
+                           x_v_liq_: np.array, x_v_osc_: np.array):
+    x_v_pid = x_v_pid_[:, 0]
+    y_v_pid = x_v_pid_[:, 1]
+    x_v_liq = x_v_liq_[:, 0]
+    y_v_liq = x_v_liq_[:, 1]
+    x_v_osc = x_v_osc_[:, 0]
+    y_v_osc = x_v_osc_[:, 1]
+    x_ref_v = x_ref[:, 0]
+    y_ref_v = x_ref[:, 1]
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Tendencia a la referencia')
+
+    axs[0].plot(t, x_v_pid, label="pid")
+    axs[0].plot(t, x_v_liq, label="liq")
+    axs[0].plot(t, x_v_osc, label="osc")
+    axs[0].plot(t, x_ref_v, label="Referencia")
+
+    axs[1].plot(t, y_v_pid, label="pid")
+    axs[1].plot(t, y_v_liq, label="liq")
+    axs[1].plot(t, y_v_osc, label="osc")
     axs[1].plot(t, y_ref_v, label="Referencia")
     axs[1].set(xlabel='Tiempo (segs)')
     for ax in axs:

@@ -11,7 +11,9 @@ PLOTING = True
 # Quieres indices?
 INDICES = True
 # Quieres ruido?
-NOISE = True
+NOISE = False
+# Exportar?
+EXPORT = True
 
 
 def main():
@@ -21,8 +23,8 @@ def main():
     if INDICES and PLOTING:  # TODO
         test_steps = 1000
     # PID
-    pid_k1 = np.array([0.1, .1, 0.1])
-    pid_k2 = np.array([0.1, .1, 0.1])
+    pid_k1 = np.array([0.1, .0, 0.1])
+    pid_k2 = np.array([0.1, .0, 0.1])
     err_v1 = np.array([0.0, .0, 0.0])
     err_v2 = np.array([0.0, .0, 0.0])
     # torques inicial
@@ -45,7 +47,7 @@ def main():
     itae_t = np.zeros((len(t), 1))
 
     if INDICES and PLOTING:  # TODO
-        observation, _ = env.reset(seed=None, return_info=True)
+        observation, _ = env.reset(seed=0, return_info=True)
         theta_ref = control_de_referencia(observation)
 
     # Iter
@@ -68,7 +70,7 @@ def main():
         if NOISE:
             torques += 0.001*np.random.normal(size=2)
         # TODO
-        if PLOTING:
+        if PLOTING or EXPORT:
             # GRAFICOS
             e_torques_t[k, :] = torques
             e_x_t[k, :] = err_theta
@@ -91,6 +93,10 @@ def main():
         graphs.grafico_estados(t, theta_real_t, theta_ref_t)
         if INDICES:
             graphs.grafico_indices(t, ise_t, itse_t, iae_t, itae_t)
+
+    if EXPORT:
+        np.save(graphs.PID_PATH_EXPORT+"_state.npy",
+                np.hstack((theta_real_t, theta_ref_t)))
 
 
 if __name__ == '__main__':
