@@ -1,5 +1,6 @@
-from lib.util import control_de_referencia, gen_tiempo, dif_err
-from lib.pid import pid_calc
+from lib.util import control_de_referencia, gen_tiempo, dif_err_lqi
+from lib.modelo import matrices_completas
+from lib.lqi import vector_estados, gananciaK, Q_a, R_a
 import numpy as np
 import glfw
 import gym
@@ -11,33 +12,47 @@ def main():
     test_steps = 10000
     # torques inicial
     torques = np.array([0.0000, 0.000])
-
     # Genera vector de tiempo
     t = gen_tiempo(Ts, test_steps)
+    # Integrador del error
+    sum_err = np.array([0., 0., 0., 0.])
 
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
     observation, _ = env.reset(seed=None, return_info=True)
-
+    # Valores de y para referenciar
     theta_ref = control_de_referencia(observation)
 
-    for _ in range(test_steps):
+    for k in range(test_steps):
+        # Cambiar seed
+        if k % (test_steps/20) == 0:
+            observation, _ = env.reset(seed=None, return_info=True)
+            theta_ref = control_de_referencia(observation)
+        # Obtener las matrices completas
+        Aa, Ba, Ca = matrices_completas(observation, torques)
+        # Calculo de error en "y"
+        err_vector = dif_err_lqi(observation, theta_ref)
+        sum_err = sum_err + err_vector*Ts
+        """
+            Control LQI
+        """
+        # Ganancia K
+        K = gananciaK(Aa, Ba, Q_a, R_a)
+        # Vector de estados
+        theta1, theta2, omega1, omega2 = vector_estados(observation)
+        # Generar vector aumentado 8x1
+        x_a = np.transpose(
+            np.hstack((err_vector[0:2], -omega1, -omega2, sum_err))
+        )
+        # Calculo de actuadores
+        torques = K.dot(x_a)
+
         # Itera la interfaz
         env.render()
         accion = env.action_space.sample()
         # Aplica torque
         observation, reward, _, _ = env.step(torques)
-
-        """
-        Operacion LQI
-        """
-        # Obtenemos jacobianos para la iteracion
-
-        # Calculamos diferencia y lo guardamos en el vector buffer
-        err_v1, err_v2 = dif_err(observation, theta_ref, err_v1, err_v2)
-        # Aplicamos ley de control PID
-        torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
 
     glfw.terminate()
     env.close()

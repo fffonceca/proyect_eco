@@ -8,6 +8,9 @@ y tau_2, estas quedan en función de thetas y sus derivadas las cuales
 pueden ser extraídas directamente del vector de estados
 """
 
+Q_a = np.diag([1., 1., 3., 3., .1, .1, .1, .1])
+R_a = np.diag([1., 1.])
+
 
 def gananciaK(Aa: np.array, Ba: np.array, Qa: np.array, Ra: np.array):
     """
@@ -32,4 +35,4 @@ def vector_estados(obs: np.array) -> np.array:
 
 
 if __name__ == '__main__':
-    import modelo
+    pass

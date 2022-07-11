@@ -1,4 +1,4 @@
-from lib.util import control_de_referencia, gen_tiempo, dif_err
+from lib.util import control_de_referencia, gen_tiempo, dif_err_pid
 from lib.pid import pid_calc
 import numpy as np
 import glfw
@@ -23,18 +23,19 @@ def main():
     # Para visualizar que es lo que hace el agente
     glfw.init()
     env = gym.make("Reacher-v2")  # brazo 2 DOF
-    observation, _ = env.reset(seed=None, return_info=True)
 
-    theta_ref = control_de_referencia(observation)
-
-    for _ in range(test_steps):
+    for k in range(test_steps):
+        # Cambiar seed
+        if k % (test_steps/20) == 0:
+            observation, _ = env.reset(seed=None, return_info=True)
+            theta_ref = control_de_referencia(observation)
         # Itera la interfaz
         env.render()
         accion = env.action_space.sample()
         # Aplica torque
         observation, reward, _, _ = env.step(torques)
         # Calculamos diferencia y lo guardamos en el vector buffer
-        err_v1, err_v2 = dif_err(observation, theta_ref, err_v1, err_v2)
+        err_v1, err_v2 = dif_err_pid(observation, theta_ref, err_v1, err_v2)
         # Aplicamos ley de control PID
         torques = pid_calc(pid_k1, err_v1, pid_k2, err_v2, torques)
 

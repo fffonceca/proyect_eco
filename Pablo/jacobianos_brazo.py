@@ -1,7 +1,7 @@
 import numpy as np 
 
 def jacobianos_robot(obs, tau, l1= 0.1, l2=0.1, m= 0.03):
-    COS2Q2 = obs[1]**2 - obs[3]**2 
+    COS2Q2 = obs[1]**2 - obs[3]**2
 
     A32_1 = (6*l2*(-2*(l1-6*l2*obs[1])*obs[3]*(-6*(l1**2+3*l2**2)*m*(l1*l2*m*obs[3]*obs[7]*(2*obs[6]+obs[7]) + 2*tau[0]) - 18*l2*m(l2+2*l1*obs[1])*
     (l1*l2*m*obs[3]*obs[6]**2 - 2*tau[1])) + l1*m*(16*l1**2 +33*l2**2 + 6*l2*(2*l1*obs[1] - 3*l2*COS2Q2))*m*(3* l2**2 * obs[1]*(obs[6] + obs[7])**2 + 
