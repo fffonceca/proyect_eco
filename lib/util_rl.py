@@ -35,6 +35,7 @@ class ReplayBuffer:
     
     def __len__(self):
         return len(self.buffer)
+
 class NormalizedActions(gym.ActionWrapper):
     def _action(self, action):
         low  = self.action_space.low
@@ -52,7 +53,8 @@ class NormalizedActions(gym.ActionWrapper):
         action = 2 * (action - low) / (high - low) - 1
         action = np.clip(action, low, high)
         
-        return actions
+        return action
+    
 def plot(frame_idx, rewards):
     clear_output(True)
     plt.figure(figsize=(20,5))
